@@ -121,33 +121,6 @@ func (c *Config) Subscription(ctx context.Context) (token string, source Source,
 	return token, source, nil
 }
 
-// ProvisioningTasks returns a slice of all tasks to be submitted upon first contact with a distro.
-func (c *Config) ProvisioningTasks(ctx context.Context, distroName string) ([]task.Task, error) {
-	var taskList []task.Task
-
-	// Refresh data from registry
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	if c.stopped() {
-		return nil, errors.New("config stopped")
-	}
-
-	if err := c.load(); err != nil {
-		return nil, fmt.Errorf("could not load: %v", err)
-	}
-
-	// Ubuntu Pro attachment
-	proToken, _ := c.subscription.resolve()
-	taskList = append(taskList, tasks.ProAttachment{Token: proToken})
-
-	// Landscape config
-	lconf, _ := c.landscape.resolve()
-	taskList = append(taskList, tasks.LandscapeConfigure{Config: lconf, HostagentUID: c.landscape.UID})
-
-	return taskList, nil
-}
-
 // LandscapeClientConfig returns the value of the landscape server URL and
 // the method it was acquired with (if any).
 func (c *Config) LandscapeClientConfig(ctx context.Context) (string, Source, error) {

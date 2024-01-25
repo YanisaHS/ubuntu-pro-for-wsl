@@ -38,34 +38,9 @@ type Worker struct {
 	connMu sync.RWMutex
 }
 
-// Provisioning is an interface which provides provisioning tasks.
-type Provisioning interface {
-	ProvisioningTasks(context.Context, string) ([]task.Task, error)
-}
-
-type options struct {
-	provisioning Provisioning
-}
-
-// Option is an optional argument for worker.New.
-type Option func(*options)
-
-// WithProvisioning is an optional parameter for worker.New that allows for
-// conditionally importing the provisioning tasks.
-func WithProvisioning(provisioning Provisioning) Option {
-	return func(o *options) {
-		o.provisioning = provisioning
-	}
-}
-
 // New creates a new worker and starts it. Call Stop when you're done to avoid leaking the task execution goroutine.
-func New(ctx context.Context, d distro, storageDir string, args ...Option) (*Worker, error) {
+func New(ctx context.Context, d distro, storageDir string) (*Worker, error) {
 	storagePath := filepath.Join(storageDir, d.Name()+".tasks")
-
-	var opts options
-	for _, f := range args {
-		f(&opts)
-	}
 
 	tm, err := newTaskManager(storagePath)
 	if err != nil {
@@ -78,21 +53,6 @@ func New(ctx context.Context, d distro, storageDir string, args ...Option) (*Wor
 	}
 
 	w.start(ctx)
-
-	// load and submit provisioning tasks. (case of first contact with distro)
-	if opts.provisioning == nil {
-		return w, nil
-	}
-
-	provisioning, err := opts.provisioning.ProvisioningTasks(ctx, d.Name())
-	if err != nil {
-		return w, err
-	}
-
-	if err := w.SubmitTasks(provisioning...); err != nil {
-		w.Stop(ctx)
-		return nil, err
-	}
 
 	return w, nil
 }

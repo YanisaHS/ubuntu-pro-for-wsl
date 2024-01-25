@@ -16,7 +16,6 @@ import (
 
 	"github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/consts"
 	"github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/distros/distro"
-	"github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/distros/worker"
 	log "github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/grpc/logstreamer"
 	"gopkg.in/yaml.v3"
 )
@@ -34,8 +33,7 @@ type DistroDB struct {
 
 	scheduleTrigger chan struct{}
 
-	storageDir   string
-	provisioning worker.Provisioning
+	storageDir string
 
 	ctx       context.Context
 	cancelCtx func()
@@ -57,7 +55,7 @@ type DistroDB struct {
 // Every certain amount of times, the database wil purge all distros that
 // are no longer registered or that have been marked as unreachable. This
 // cleanup can be triggered on demmand with TriggerCleanup.
-func New(ctx context.Context, storageDir string, provisioning worker.Provisioning) (*DistroDB, error) {
+func New(ctx context.Context, storageDir string) (*DistroDB, error) {
 	if err := os.MkdirAll(storageDir, 0600); err != nil {
 		return nil, fmt.Errorf("could not create database directory: %w", err)
 	}
@@ -73,7 +71,6 @@ func New(ctx context.Context, storageDir string, provisioning worker.Provisionin
 	db := &DistroDB{
 		storageDir:      storageDir,
 		scheduleTrigger: make(chan struct{}),
-		provisioning:    provisioning,
 		ctx:             ctx,
 		cancelCtx:       cancel,
 	}
@@ -151,7 +148,7 @@ func (db *DistroDB) GetDistroAndUpdateProperties(ctx context.Context, name strin
 	if !found {
 		log.Debugf(ctx, "Cache miss, creating %q and adding it to the database", name)
 
-		d, err := distro.New(db.ctx, name, props, db.storageDir, &db.distroStartMu, distro.WithProvisioning(db.provisioning))
+		d, err := distro.New(db.ctx, name, props, db.storageDir, &db.distroStartMu)
 		if err != nil {
 			return nil, err
 		}
@@ -169,7 +166,7 @@ func (db *DistroDB) GetDistroAndUpdateProperties(ctx context.Context, name strin
 		go d.Cleanup(ctx)
 		delete(db.distros, normalizedName)
 
-		d, err := distro.New(db.ctx, name, props, db.storageDir, &db.distroStartMu, distro.WithProvisioning(db.provisioning))
+		d, err := distro.New(db.ctx, name, props, db.storageDir, &db.distroStartMu)
 		if err != nil {
 			return nil, err
 		}

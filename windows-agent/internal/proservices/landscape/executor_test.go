@@ -490,7 +490,7 @@ func testReceiveCommand(t *testing.T, distrosettings distroSettings, testSetup f
 		tb.conf.landscapeClientConfig = executeLandscapeConfigTemplate(t, defaultLandscapeConfig, "", lis.Addr())
 	}
 
-	db, err := database.New(ctx, t.TempDir(), tb.conf)
+	db, err := database.New(ctx, t.TempDir())
 	require.NoError(t, err, "Setup: database New should not return an error")
 
 	tb.db = db

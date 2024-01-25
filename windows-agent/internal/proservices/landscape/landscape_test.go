@@ -24,7 +24,6 @@ import (
 	"github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/config"
 	"github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/distros/database"
 	"github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/distros/distro"
-	"github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/distros/task"
 	"github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/proservices/landscape"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
@@ -157,7 +156,7 @@ func TestConnect(t *testing.T) {
 				defer server.Stop()
 			}
 
-			db, err := database.New(ctx, t.TempDir(), conf)
+			db, err := database.New(ctx, t.TempDir())
 			require.NoError(t, err, "Setup: database New should not return an error")
 
 			distroName, _ := wsltestutils.RegisterDistro(t, ctx, true)
@@ -258,7 +257,7 @@ func TestSendUpdatedInfo(t *testing.T) {
 			go server.Serve(lis)
 			defer server.Stop()
 
-			db, err := database.New(ctx, t.TempDir(), conf)
+			db, err := database.New(ctx, t.TempDir())
 			require.NoError(t, err, "Setup: database New should not return an error")
 
 			distroName, _ := wsltestutils.RegisterDistro(t, ctx, true)
@@ -452,7 +451,7 @@ func TestAutoReconnection(t *testing.T) {
 			conf.proToken = "TOKEN"
 			conf.landscapeClientConfig = executeLandscapeConfigTemplate(t, defaultLandscapeConfig, "", lis.Addr())
 
-			db, err := database.New(ctx, t.TempDir(), conf)
+			db, err := database.New(ctx, t.TempDir())
 			require.NoError(t, err, "Setup: database New should not return an error")
 
 			const hostname = "HOSTNAME"
@@ -822,10 +821,6 @@ func (m *mockConfig) LandscapeClientConfig(ctx context.Context) (string, config.
 		return "", config.SourceNone, errors.New("Mock error")
 	}
 	return m.landscapeClientConfig, config.SourceUser, nil
-}
-
-func (m *mockConfig) ProvisioningTasks(ctx context.Context, distroName string) ([]task.Task, error) {
-	return nil, nil
 }
 
 func (m *mockConfig) Subscription(ctx context.Context) (string, config.Source, error) {

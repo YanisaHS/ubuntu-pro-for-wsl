@@ -39,7 +39,7 @@ func TestNew(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	db, err := database.New(ctx, t.TempDir(), nil)
+	db, err := database.New(ctx, t.TempDir())
 	require.NoError(t, err, "Setup: empty database New() should return no error")
 	defer db.Close(ctx)
 
@@ -149,7 +149,7 @@ func TestConnected(t *testing.T) {
 			ctx, cancel := context.WithCancel(ctx)
 			defer cancel()
 
-			db, err := database.New(ctx, t.TempDir(), nil)
+			db, err := database.New(ctx, t.TempDir())
 			require.NoError(t, err, "Setup: empty database New() should return no error")
 			defer db.Close(ctx)
 
