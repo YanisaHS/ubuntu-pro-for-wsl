@@ -27,17 +27,15 @@ type Config interface {
 
 // CloudInit contains necessary data to drop cloud-init user data files for WSL's data source to pick them up.
 type CloudInit struct {
-	globalDataDir string
-	distroDataDir string
-	conf          Config
+	dataDir string
+	conf    Config
 }
 
 // New creates a CloudInit object and attaches it to the configuration notifier.
-func New(ctx context.Context, conf Config, dataDir string) (CloudInit, error) {
+func New(ctx context.Context, conf Config, publicDir string) (CloudInit, error) {
 	c := CloudInit{
-		globalDataDir: dataDir,
-		distroDataDir: filepath.Join(dataDir, "landscape"),
-		conf:          conf,
+		dataDir: filepath.Join(publicDir, ".cloud-init"),
+		conf:    conf,
 	}
 
 	if err := c.WriteAgentData(ctx); err != nil {
@@ -62,7 +60,7 @@ func (c CloudInit) WriteAgentData(ctx context.Context) (err error) {
 		return err
 	}
 
-	err = writeFileInDir(c.globalDataDir, "agent.yaml", cloudInit)
+	err = writeFileInDir(c.dataDir, "agent.yaml", cloudInit)
 	if err != nil {
 		return err
 	}
@@ -72,7 +70,7 @@ func (c CloudInit) WriteAgentData(ctx context.Context) (err error) {
 
 // WriteDistroData writes cloud-init user data to be used for a distro in particular.
 func (c CloudInit) WriteDistroData(distroName string, cloudInit string) error {
-	err := writeFileInDir(c.distroDataDir, distroName+".user-data", []byte(cloudInit))
+	err := writeFileInDir(c.dataDir, distroName+".user-data", []byte(cloudInit))
 	if err != nil {
 		return fmt.Errorf("could not create distro-specific cloud-init file: %v", err)
 	}
@@ -109,7 +107,7 @@ func writeFileInDir(dir string, file string, contents []byte) error {
 func (c CloudInit) RemoveDistroData(distroName string) (err error) {
 	defer decorate.OnError(&err, "could not remove distro-specific cloud-init file")
 
-	path := filepath.Join(c.distroDataDir, distroName+".user-data")
+	path := filepath.Join(c.dataDir, distroName+".user-data")
 
 	err = os.Remove(path)
 	if errors.Is(err, fs.ErrNotExist) {

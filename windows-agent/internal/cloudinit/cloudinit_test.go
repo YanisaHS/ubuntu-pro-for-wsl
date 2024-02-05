@@ -32,13 +32,13 @@ func TestNew(t *testing.T) {
 
 			ctx := context.Background()
 
-			dataDir := t.TempDir()
+			publicDir := t.TempDir()
 
 			conf := &mockConfig{
 				subcriptionErr: tc.breakWriteAgentData,
 			}
 
-			_, err := cloudinit.New(ctx, conf, dataDir)
+			_, err := cloudinit.New(ctx, conf, publicDir)
 			if tc.wantErr {
 				require.Error(t, err, "Cloud-init creation should have returned an error")
 				return
@@ -48,7 +48,7 @@ func TestNew(t *testing.T) {
 			require.Len(t, conf.notify, 1, "Cloud-init should have attached a callback to the config")
 
 			// Assert that the subscribed function works
-			path := filepath.Join(dataDir, "agent.yaml")
+			path := filepath.Join(publicDir, ".cloud-init", "agent.yaml")
 			require.NoErrorf(t, os.RemoveAll(path), "Removing the agent cloud-init should not fail")
 
 			conf.triggerNotify()
@@ -122,8 +122,8 @@ url = www.example.com/new/rickroll
 			t.Parallel()
 			ctx := context.Background()
 
-			root := t.TempDir()
-			dir := filepath.Join(root, "cloud-init")
+			publicDir := t.TempDir()
+			dir := filepath.Join(publicDir, ".cloud-init")
 			path := filepath.Join(dir, "agent.yaml")
 
 			conf := &mockConfig{
@@ -132,7 +132,7 @@ url = www.example.com/new/rickroll
 			}
 
 			// Test a clean filesystem (New calls WriteAgentData internally)
-			ci, err := cloudinit.New(ctx, conf, dir)
+			ci, err := cloudinit.New(ctx, conf, publicDir)
 			require.NoError(t, err, "cloudinit.New should return no error")
 			require.FileExists(t, path, "New() should have created an agent cloud-init file")
 
@@ -263,14 +263,14 @@ data:
 
 			distroName := "CoolDistro"
 
-			root := t.TempDir()
-			dir := filepath.Join(root, "cloud-init")
-			path := filepath.Join(dir, "landscape", distroName+".user-data")
+			publicDir := t.TempDir()
+			dir := filepath.Join(publicDir, ".cloud-init")
+			path := filepath.Join(dir, distroName+".user-data")
 
 			conf := &mockConfig{}
 
 			// Test a clean filesystem (New calls WriteAgentData internally)
-			ci, err := cloudinit.New(ctx, conf, dir)
+			ci, err := cloudinit.New(ctx, conf, publicDir)
 			require.NoError(t, err, "Setup: cloud-init New should return no errors")
 
 			if !tc.noOldData {
@@ -343,15 +343,15 @@ func TestRemoveDistroData(t *testing.T) {
 
 			distroName := "CoolDistro"
 
-			root := t.TempDir()
-			distroDir := filepath.Join(root, "landscape")
-			path := filepath.Join(distroDir, distroName+".user-data")
+			publicDir := t.TempDir()
+			dir := filepath.Join(publicDir, ".cloud-init")
+			path := filepath.Join(dir, distroName+".user-data")
 
-			ci, err := cloudinit.New(ctx, &mockConfig{}, root)
+			ci, err := cloudinit.New(ctx, &mockConfig{}, publicDir)
 			require.NoError(t, err, "Setup: cloud-init New should return no errors")
 
 			if !tc.dirDoesNotExist {
-				require.NoError(t, os.MkdirAll(distroDir, 0700), "Setup: could not set up directory")
+				require.NoError(t, os.MkdirAll(dir, 0700), "Setup: could not set up directory")
 				if !tc.fileDoesNotExist {
 					require.NoError(t, os.WriteFile(path, []byte("hello, world!"), 0600), "Setup: could not set up directory")
 				}
