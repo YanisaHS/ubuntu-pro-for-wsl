@@ -6,25 +6,25 @@ Check if you have an _Ubuntu (Preview)_ distro installed. On you Windows termina
 wsl --list --verbose
 ```
 - If the output shows _Ubuntu-Preview_, you have a choice of two options:
-  1. Follow [option 1: manage pre-existing distros](install::option2).
+  1. Follow [option 1: Manage pre-existing distros](install::option2).
   2. Remove it (be careful: this is irreversible) with `wsl --unregister Ubuntu-Preview` and follow [option 2: Manage distros not yet installed](install::option2).
 - If the output does not show _Ubuntu-Preview_, proceed with [option 2: Manage distros not yet installed](install::option2).
 
-If you have any other distros that you want to manage, follow [option 1: manage pre-existing distros](install::option1) for every one of them.
+If you have any other distros that you want to manage, follow [option 1: Manage pre-existing distros](install::option1) for every one of them.
 
 (install::option1)=
 ### Option 1: Manage pre-existing distros
 If you want to manage distros that are already installed, you must verify that every distro fulfils the following two requirements. Any distro that does not follow them will not be managed (but you don't need to remove it).
-- It must be Ubuntu 24.04 or greater. See the version with 
+- It must be Ubuntu 24.04 or greater. To see the version, open a terminal within the distro and run:
   ```
   cat /etc/os-release | grep VERSION_ID
   ```
 - It needs package `wsl-pro-service` package installed. This will ensure that you have these components: 
-  -  `wsl.pro-service`
-  -  `pro` (the Ubuntu Pro Client)
-  -  `landscape-client` (the Landscape client).
+  -  `wsl-pro.service`: the Ubuntu Pro for WSL service.
+  -  `pro`: the Ubuntu Pro Client.
+  -  `landscape-client`: the Landscape client.
 
-  To verify that you do have it, open a terminal inside that instance and run
+  To verify that you do have it, open a terminal inside the instance and run
   ```
   dpkg -s wsl-pro-service | grep Status
   ```
@@ -39,6 +39,7 @@ If you don’t have any _Ubuntu (Preview)_ WSL instances:
   On your Windows host, go to the Microsoft Store, search for _Ubuntu (Preview)_, click on the result and look at the options:
   - If you see a button `Install`, click it.
   - If you see a button `Update`, click it.
+  
   On the same Microsoft Store page, there should be an `Open` button. Click it. _Ubuntu (Preview)_ will start and guide you through the installation steps.
 
 ### Other requirements
@@ -64,7 +65,9 @@ If you don’t have any _Ubuntu (Preview)_ WSL instances:
 On your Windows host, go to the Microsoft Store, search for _Ubuntu Pro for WSL_. Click on it and find the _Install_ button. Click on it.
 
 ## 2. Setup
-You have two ways of setting up UP4W.
+You have two ways of setting up UP4W. You can use the graphical interface (GUI), which is recommended for users managing a single Windows machine. If you deploy at scale, we recommend using automated tools to set up UP4W via the registry.
+
+Regardless of your use-case, you can follow any of the two options according to your preference and needs.
 
 ### Option 1: Using the GUI
 1. Open the Windows menu, search and click on Ubuntu Pro for WSL.
@@ -76,7 +79,6 @@ You have two ways of setting up UP4W.
    2. Write the path to file `landscape-client.conf` specified during the Landscape server setup.
 
 ### Option 2: Using the registry
-> **ⓘ Note:** This can also be performed by automated tools, so long as they can write into the Windows Registry.
 
 1. Open the Windows menu, search and click on the Registry Editor.
 2. Navigate the tree to `HKEY_CURRENT_USER\Software`
@@ -97,12 +99,15 @@ You have two ways of setting up UP4W.
      - Right-click `LandscapeConfig` > Modify > Write the contents of the specified file.
 
 ## 3. Verification
+These steps verify that the process worked as expected. If either verification step fails, wait for a few seconds and try again. This should not take longer than a minute.
 1. Open any of the distros you want to manage and check that it is pro-attached with `pro status`.
 2. Open Landscape and check that the host and distro were registered. <!-- TODO: how ? -->
 
+
+
 ## Read more
-- [Ubuntu Pro](../reference/ubuntu_pro)
-- [Landscape](../reference/landscape)
+- [Reference page for Ubuntu Pro](../reference/ubuntu_pro)
+- [Reference page for Landscape in UP4W](../reference/landscape)
 
 ### External links
 - [Ubuntu Pro](https://www.ubuntu.com/pro)
