@@ -1,11 +1,8 @@
 # How to set up Ubuntu Pro For WSL
 
-## Pre-requisites
- - A compatible Ubuntu WSL distro.
- - An Ubuntu Pro token.
- - A Landscape server.
-
+## Prerequisites
 ### Prepare a compatible Ubuntu WSL distro
+
 <details><summary> Expand to see how to make a pre-existing WSL distro UP4W-compatible </summary>
 
 > Note: You can make more than one distro compatible, and UP4W will manage all of them.
@@ -39,11 +36,20 @@ On your Windows host, go to the Microsoft Store, search for _Ubuntu (Preview)_, 
 	On the same Microsoft Store page, there should be an `Open` button. Click it. _Ubuntu (Preview)_ will start and guide you through the installation steps.
 </details>
 
+
 ### Obtain an Ubuntu Pro token
+
+<details><summary> Expand to see how </summary>
+
 Get the Ubuntu Pro token associated to your subscription (it's free for up to 5 machines).
-> Read more: [Ubuntu Pro dashboard](https://ubuntu.com/pro)
+> See more: [Ubuntu Pro dashboard](https://ubuntu.com/pro)
+
+</details>
 
 ### Set up a Landscape server
+
+<details><summary> Expand to see how </summary>
+
 1. Set up a Landscape Beta server. Usually you'd run it on another machine (a server), but you can install it on some WSL instance just for demonstration purposes:
    1. On the Windows terminal, run `wsl --install Ubuntu-22.04`.
    2. Inside `Ubuntu-22.04`, run `ip r` and take note of the default gateway.
@@ -64,9 +70,11 @@ Get the Ubuntu Pro token associated to your subscription (it's free for up to 5 
 	ping_url = ${PING_API_ENDPOINT}
 	account_name = standalone
 	```
-	> Read more about this config file: [UP4W Landscape config reference](landscape-config).
+	> See more: [UP4W Landscape config reference](landscape-config).
 4. Open a `Ubuntu-22.04` terminal and keep it open.
-	- This ensures this distro keeps running in the background. Read more in [Microsoft's FAQ](https://learn.microsoft.com/en-us/windows/wsl/faq#can-i-use-wsl-for-production-scenarios--).
+	- This ensures this distro keeps running in the background. See more: [Microsoft's FAQ](https://learn.microsoft.com/en-us/windows/wsl/faq#can-i-use-wsl-for-production-scenarios--).
+
+</details>
 
 ## 1. Install Ubuntu Pro for WSL
 On your Windows host, go to the Microsoft Store, search for _Ubuntu Pro for WSL_. Click on it and find the _Install_ button. Click on it.
@@ -85,7 +93,7 @@ You have two ways of setting up UP4W. You can use the graphical interface (GUI),
 	2. Write the path to file `landscape-client.conf` specified during the Landscape server setup.
 
 ### Using the registry
-> Read more about how we use the Windows registry: [Windows registry](windows-registry).
+> See more: [Windows registry](windows-registry).
 1. Open the Windows menu, search and click on the Registry Editor.
 2. Navigate the tree to `HKEY_CURRENT_USER\Software`.
 3. Under this key, search for key `Canonical`. If it does not exist, create it:
