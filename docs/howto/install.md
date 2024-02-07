@@ -4,7 +4,7 @@ Ubuntu Pro For WSL's main functionality is to manage WSL distros. This guide wil
 2. An Ubuntu Pro token.
 3. A Landscape server.
 
-Here are some detailed steps to help fulfill these requirements:
+Here are some detailed steps to help satisfy these requirements:
 
 1. Check if you have an _Ubuntu (Preview)_ distro installed. On you Windows terminal:
 	```
@@ -48,21 +48,21 @@ Here are some detailed steps to help fulfill these requirements:
 	  </details>
 
 2. Verify you have an Ubuntu Pro subscription or get up to five of them for free.
-	> Read more: https://ubuntu.com/pro/dashboard.
+	> Read more: [Ubuntu Pro dashboard](https://ubuntu.com/pro/dashboard)
 
-3. Set up a Landscape dev server serving with the following options:
+3. Set up a Landscape dev server. Take note of the following addresses:
 	<!-- (TODO: create a cloud-init file so it sets this up automatically). -->
-	- Hostagent API endpoint at `localhost:8000`.
-	- Message API endpoint at `localhost:8001`
-	- Ping API endpoint at `localhost:8002`
-	- Store the following file somewhere in your Windows system. Name it `landscape-client.conf`.
+	- Hostagent API endpoint.
+	- Message API endpoint.
+	- Ping API endpoint.
+   Store the following file somewhere in your Windows system. Name it `landscape-client.conf`. Replace the variables in the file with the addresses you took note of.
 		```ini
 		[host]
-		url = localhost:8000
+		url = ${HOSTAGENT_API_ENDPOINT}
 
 		[client]
-		url = localhost:8001
-		ping_url = localhost:8002
+		url = ${MESSAGE_API_ENDPOINT}
+		ping_url = ${PING_API_ENDPOINT}
 		account_name = standalone
 		```
 	  > Read more about this config file: [UP4W Landscape config reference](landscape-config).
@@ -117,6 +117,6 @@ These steps verify that the process worked as expected. If either verification s
 - [Reference page for Landscape in UP4W](../reference/landscape)
 
 ### External links
-- [Ubuntu Pro](https://www.ubuntu.com/pro)
+- [Ubuntu Pro](https://ubuntu.com/pro)
 - [Landscape documentation](https://ubuntu.com/landscape/docs)
 - [How to perform common tasks with WSL in Landscape](https://ubuntu.com/landscape/docs/perform-common-tasks-with-wsl-in-landscape)

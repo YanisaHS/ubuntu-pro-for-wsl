@@ -17,6 +17,8 @@ systemd
 ubuntu
 UbuntuProForWSL
 wsl
+WSL
+WSL's
 zsh
 
 # Other jargon
@@ -37,3 +39,7 @@ compinit
 config
 fpath
 zshrc
+
+# Registry keys
+UbuntuProToken
+LandscapeClientConfig

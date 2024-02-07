@@ -5,9 +5,9 @@ The Windows registry is a database provided by Windows where programs can read a
 
 UP4W reads the key located at path `HK_CURRENT_USER\Software\Canonical\UbuntuPro`. Any changes to this key will be detected automatically and the config will be applied. The values it will read are the following:
 
-- `UbuntuProToken` (type `REG_SZ`) expects the Ubuntu Pro Token for the user. Read more: [Ubuntu Pro token](ubuntu_pro_token).
+- Value `UbuntuProToken` (type `REG_SZ`) expects the Ubuntu Pro Token for the user. Read more: [Ubuntu Pro token](ubuntu_pro_token).
 
-- `LandscapeClientConfig` (type `REG_SZ` or `REG_MULTI_SZ`) expects the contents of the Landscape configuration file. Read more [Landscape configuration](landscape-config).
+- Value `LandscapeClientConfig` (type `REG_SZ` or `REG_MULTI_SZ`) expects the contents of the Landscape configuration file. Read more [Landscape configuration](landscape-config).
 
 
 > Read more about the Windows registry in Microsoft's documentation:
