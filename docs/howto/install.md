@@ -48,7 +48,7 @@ Here are some detailed steps to help satisfy these requirements:
 	  </details>
 
 2. Verify you have an Ubuntu Pro subscription or get up to five of them for free.
-	> Read more: [Ubuntu Pro dashboard](https://ubuntu.com/pro/dashboard)
+	> Read more: [Ubuntu Pro dashboard](https://ubuntu.com/pro)
 
 3. Set up a Landscape dev server. Take note of the following addresses:
 	<!-- (TODO: create a cloud-init file so it sets this up automatically). -->
@@ -80,7 +80,7 @@ Regardless of your use-case, you can follow any of the two options according to 
 1. Open the Windows menu, search and click on Ubuntu Pro for WSL.
 2. Input your Ubuntu Pro Token:
 	1. Click on I already have a token
-	2. Write your Ubuntu Pro token as it appears on [your dashboard](https://ubuntu.com/pro/dashboard) and click apply.
+	2. Write your Ubuntu Pro token and click apply.
 3. Input your Landscape configuration:
 	1. Click on ??? <!--TODO: Landscape data input GUI is not implemented yet-->
 	2. Write the path to file `landscape-client.conf` specified during the Landscape server setup.
