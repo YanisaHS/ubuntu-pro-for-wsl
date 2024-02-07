@@ -6,7 +6,7 @@
  - A Landscape server.
 
 ### Prepare a compatible Ubuntu WSL distro
-<details><summary> Expand to see how to make your WSL distro UP4W-compatible </summary>
+<details><summary> Expand to see how to make a pre-existing WSL distro UP4W-compatible </summary>
 
 > Note: You can make more than one distro compatible, and UP4W will manage all of them.
 1.	Check the version of your distro with `cat /etc/os-release`.
@@ -23,7 +23,7 @@
 	- Otherwise: Install it by running: `sudo apt update && sudo apt install -y wsl-pro-service`
 </details>
 
-<details><summary> Expand to see how to install a UP4W-compatible distro </summary>
+<details><summary> Expand to see how to create a new UP4W-compatible distro </summary>
 
 1.	Verify that you have WSL installed: In your Windows terminal, run `wsl --version` and see that there is no error. Otherwise install it with `wsl --install`.
 2.	Ensure that you don't have an _Ubuntu (Preview)_ distro registered by running `wsl --list --quiet` on your Windows terminal.
