@@ -38,6 +38,8 @@ type Service struct {
 	// function to try again now (instead of waiting for the retrial
 	// time). Do not use directly. Instead use signalRetryConnection().
 	connRetrier *retryConnection
+
+	cloudinit CloudInit
 }
 
 // Config is a configuration provider for ProToken and the Landscape URL.
@@ -52,6 +54,12 @@ type Config interface {
 	Notify(func())
 }
 
+// CloudInit is a cloud-init user data writer.
+type CloudInit interface {
+	WriteDistroData(distroName string, cloudInit string) error
+	RemoveDistroData(distroName string) error
+}
+
 type options struct {
 	hostname string
 }
@@ -60,7 +68,7 @@ type options struct {
 type Option = func(*options)
 
 // New creates a new Landscape service object.
-func New(ctx context.Context, conf Config, db *database.DistroDB, args ...Option) (*Service, error) {
+func New(ctx context.Context, conf Config, db *database.DistroDB, cloudInit CloudInit, args ...Option) (*Service, error) {
 	var opts options
 
 	for _, f := range args {
@@ -84,6 +92,7 @@ func New(ctx context.Context, conf Config, db *database.DistroDB, args ...Option
 		db:          db,
 		hostName:    opts.hostname,
 		connRetrier: newRetryConnection(),
+		cloudinit:   cloudInit,
 	}
 
 	s.watchConfigChanges(ctx)
@@ -302,4 +311,8 @@ func (s *Service) sendInfo(info *landscapeapi.HostAgentInfo) error {
 	defer s.connMu.RUnlock()
 
 	return s.conn.sendInfo(info)
+}
+
+func (s *Service) cloudInit() CloudInit {
+	return s.cloudinit
 }

@@ -100,15 +100,20 @@ func (e executor) stop(ctx context.Context, cmd *landscapeapi.Command_Stop) (err
 
 func (e executor) install(ctx context.Context, cmd *landscapeapi.Command_Install) (err error) {
 	log.Debugf(ctx, "Landscape: received command Install. Target: %s", cmd.GetId())
-	if cmd.GetCloudinit() != "" {
-		return fmt.Errorf("Cloud Init support is not yet available")
+
+	if cmd.GetId() == "" {
+		return errors.New("Landscape install: empty distro name")
 	}
 
 	distro := gowsl.NewDistro(ctx, cmd.GetId())
 	if registered, err := distro.IsRegistered(); err != nil {
 		return err
 	} else if registered {
-		return errors.New("already installed")
+		return errors.New("Landscape install: already installed")
+	}
+
+	if err := e.cloudInit().WriteDistroData(cmd.GetId(), cmd.GetCloudinit()); err != nil {
+		return fmt.Errorf("Landscape install: skipped installation: %v", err)
 	}
 
 	if err := gowsl.Install(ctx, distro.Name()); err != nil {
@@ -122,7 +127,7 @@ func (e executor) install(ctx context.Context, cmd *landscapeapi.Command_Install
 		// Avoid error states by cleaning up on error
 		err := distro.Uninstall(ctx)
 		if err != nil {
-			log.Infof(ctx, "Landscape Install: failed to clean up %q after failed Install: %v", distro.Name(), err)
+			log.Infof(ctx, "Landscape Install: distro %q: failed to uninstall after failed Install: %v", distro.Name(), err)
 		}
 	}()
 
@@ -157,10 +162,19 @@ func (e executor) uninstall(ctx context.Context, cmd *landscapeapi.Command_Unins
 	log.Debugf(ctx, "Landscape: received command Uninstall. Target: %s", cmd.GetId())
 	d, ok := e.database().Get(cmd.GetId())
 	if !ok {
-		return fmt.Errorf("distro %q not in database", cmd.GetId())
+		return fmt.Errorf("Landscape uninstall: distro %q not in database", cmd.GetId())
 	}
 
-	return d.Uninstall(ctx)
+	if err := d.Uninstall(ctx); err != nil {
+		// Uninstall's error message already includes the distro name.
+		return fmt.Errorf("Landscape uninstall: %v", err)
+	}
+
+	if err := e.cloudInit().RemoveDistroData(d.Name()); err != nil {
+		log.Warningf(ctx, "Landscape uninstall: distro %q: %v", d.Name(), err)
+	}
+
+	return nil
 }
 
 func (e executor) setDefault(ctx context.Context, cmd *landscapeapi.Command_SetDefault) error {

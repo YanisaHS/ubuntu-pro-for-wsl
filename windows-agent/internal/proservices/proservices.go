@@ -5,6 +5,7 @@ import (
 	"context"
 
 	agent_api "github.com/canonical/ubuntu-pro-for-wsl/agentapi/go"
+	"github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/cloudinit"
 	"github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/config"
 	"github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/distros/database"
 	"github.com/canonical/ubuntu-pro-for-wsl/windows-agent/internal/grpc/interceptorschain"
@@ -70,6 +71,11 @@ func New(ctx context.Context, publicDir, privateDir string, args ...Option) (s M
 
 	s.conf = config.New(ctx, privateDir)
 
+	cloudInit, err := cloudinit.New(ctx, s.conf, publicDir)
+	if err != nil {
+		return s, err
+	}
+
 	db, err := database.New(ctx, privateDir, s.conf)
 	if err != nil {
 		return s, err
@@ -86,7 +92,7 @@ func New(ctx context.Context, publicDir, privateDir string, args ...Option) (s M
 
 	s.uiService = ui.New(ctx, s.conf, s.db)
 
-	landscape, err := landscape.New(ctx, s.conf, s.db)
+	landscape, err := landscape.New(ctx, s.conf, s.db, cloudInit)
 	if err != nil {
 		return s, err
 	}
